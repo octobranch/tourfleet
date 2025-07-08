@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>TourFleet</title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TourFleet - Gestión de Transporte Turístico</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="logo">
+                <i class="fas fa-bus"></i>
+                <h1>TourFleet</h1>
+            </div>
+            <div class="nav-tabs">
+                <button class="nav-tab active" onclick="showSection('dashboard')">
+                    <i class="fas fa-tachometer-alt"></i> Dashboard
+                </button>
+                <button class="nav-tab" onclick="showSection('fleet')">
+                    <i class="fas fa-car"></i> Flotilla
+                </button>
+                <button class="nav-tab" onclick="showSection('bookings')">
+                    <i class="fas fa-calendar-alt"></i> Reservas
+                </button>
+                <!-- Reemplazado: Clientes por Operación -->
+                <button class="nav-tab" onclick="showSection('operation')">
+                    <i class="fas fa-cogs"></i> Operación
+                </button>
+                <button class="nav-tab" onclick="showSection('drivers')">
+                    <i class="fas fa-user-tie"></i> Conductores
+                </button>
+                <button class="nav-tab" onclick="showSection('routes')">
+                    <i class="fas fa-route"></i> Rutas
+                </button>
+                <button class="nav-tab" onclick="showSection('reports')">
+                    <i class="fas fa-chart-bar"></i> Reportes
+                </button>
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Dashboard Section -->
+            <div id="dashboard" class="section active">
+                <h2>Dashboard Principal</h2>
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-car"></i> Vehículos</h3>
+                        <div class="number" id="totalVehicles">12</div>
+                        <p>Total en flotilla</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-calendar-check"></i> Reservas Hoy</h3>
+                        <div class="number" id="todayBookings">8</div>
+                        <p>Servicios programados</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-user-tie"></i> Conductores</h3>
+                        <div class="number" id="totalDrivers">15</div>
+                        <p>Activos disponibles</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-dollar-sign"></i> Ingresos</h3>
+                        <div class="number" id="todayRevenue">$2,450</div>
+                        <p>Ingresos del día</p>
+                    </div>
+                </div>
+
+                <div class="stats-row">
+                    <div class="stat-item">
+                        <h3>85%</h3>
+                        <p>Ocupación</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>4.8</h3>
+                        <p>Calificación</p>
+                    </div>
+                    <div class="stat-item">
+                        <h3>23</h3>
+                        <p>Rutas Activas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Fleet Section -->
+            <div id="fleet" class="section">
+                <h2>Gestión de Flotilla</h2>
+                <div class="action-buttons">
+                    <button class="btn" onclick="showAddVehicleModal()">
+                        <i class="fas fa-plus"></i> Agregar Vehículo
+                    </button>
+                    <button class="btn btn-warning" onclick="clearAllData()">
+                        <i class="fas fa-trash"></i> Limpiar Datos
+                    </button>
+                </div>
+                
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar vehículo..." id="vehicleSearch" onkeyup="searchVehicles()">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <div class="fleet-grid" id="fleetGrid">
+                    <!-- Vehicles will be populated here -->
+                </div>
+            </div>
+
+            <!-- Bookings Section -->
+            <div id="bookings" class="section">
+                <h2>Gestión de Reservas</h2>
+                
+                <div class="action-buttons">
+                    <button class="btn" onclick="showAddBookingModal()">
+                        <i class="fas fa-plus"></i> Nueva Reserva
+                    </button>
+                    <button class="btn btn-success" onclick="goToToday()">
+                        <i class="fas fa-calendar-day"></i> Hoy
+                    </button>
+                </div>
+                
+                <div class="booking-calendar">
+                    <div class="calendar-header">
+                        <button class="btn" onclick="changeMonth(-1)">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <h2 id="currentMonth">Enero 2025</h2>
+                        <button class="btn" onclick="changeMonth(1)">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #00b894;"></div>
+                            <span>Confirmado</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #f39c12;"></div>
+                            <span>Pendiente</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ff6b6b;"></div>
+                            <span>Cancelado</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color" style="background: #ffeaa7;"></div>
+                            <span>Hoy</span>
+                        </div>
+                    </div>
+                    
+                    <div class="calendar-grid">
+                        <div class="calendar-day-header">Dom</div>
+                        <div class="calendar-day-header">Lun</div>
+                        <div class="calendar-day-header">Mar</div>
+                        <div class="calendar-day-header">Mié</div>
+                        <div class="calendar-day-header">Jue</div>
+                        <div class="calendar-day-header">Vie</div>
+                        <div class="calendar-day-header">Sáb</div>
+                        <!-- Calendar days will be populated here -->
+                    </div>
+                </div>
+                
+                <div class="day-details" id="dayDetails">
+                    <h3><i class="fas fa-calendar-day"></i> Reservas para <span id="selectedDate"></span></h3>
+                    <div id="dayBookingsList">
+                        <p class="no-bookings">Seleccione un día para ver las reservas</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Sección de Operación (reemplaza a Clientes) -->
+            <div id="operation" class="section">
+                <h2>Gestión de Operación</h2>
+                <p>Gestiona todos los traslados que estén agendados para operarse</p>
+                
+                <div class="action-buttons">
+                    <button class="btn" onclick="showTodayTransfers()">
+                        <i class="fas fa-calendar-day"></i> Traslados de Hoy
+                    </button>
+                    <button class="btn" onclick="showUpcomingTransfers()">
+                        <i class="fas fa-calendar-week"></i> Próximos Traslados
+                    </button>
+                    <button class="btn" onclick="showCompletedTransfers()">
+                        <i class="fas fa-check-circle"></i> Traslados Completados
+                    </button>
+                </div>
+                
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar traslado..." id="transferSearch">
+                    <i class="fas fa-search"></i>
+                </div>
+                
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Fecha/Hora</th>
+                            <th>Cliente</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Vehículo</th>
+                            <th>Conductor</th>
+                            <th>Estado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transfersTable">
+                        <!-- Los traslados se cargarán aquí -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Drivers Section -->
+            <div id="drivers" class="section">
+                <h2>Gestión de Conductores</h2>
+                <button class="btn" onclick="showAddDriverModal()">
+                    <i class="fas fa-plus"></i> Agregar Conductor
+                </button>
+
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar conductor..." id="driverSearch" onkeyup="searchDrivers()">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Licencia</th>
+                            <th>Teléfono</th>
+                            <th>Estado</th>
+                            <th>Vehículo Asignado</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="driversTable">
+                        <!-- Drivers will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Routes Section -->
+            <div id="routes" class="section">
+                <h2>Gestión de Rutas</h2>
+                <button class="btn" onclick="showAddRouteModal()">
+                    <i class="fas fa-plus"></i> Agregar Ruta
+                </button>
+
+                <div class="search-bar">
+                    <input type="text" placeholder="Buscar ruta..." id="routeSearch" onkeyup="searchRoutes()">
+                    <i class="fas fa-search"></i>
+                </div>
+
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Nombre</th>
+                            <th>Origen</th>
+                            <th>Destino</th>
+                            <th>Duración</th>
+                            <th>Precio</th>
+                            <th>Acciones</th>
+                        </tr>
+                    </thead>
+                    <tbody id="routesTable">
+                        <!-- Routes will be populated here -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Reports Section -->
+            <div id="reports" class="section">
+                <h2>Reportes y Análisis</h2>
+                <div class="dashboard-grid">
+                    <div class="card">
+                        <h3><i class="fas fa-chart-line"></i> Ingresos Mensuales</h3>
+                        <div class="number">$45,230</div>
+                        <p>Enero 2025</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-star"></i> Satisfacción</h3>
+                        <div class="number">4.8/5</div>
+                        <p>Promedio de calificaciones</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-road"></i> Kilómetros</h3>
+                        <div class="number">12,450</div>
+                        <p>Recorridos este mes</p>
+                    </div>
+                    <div class="card">
+                        <h3><i class="fas fa-users"></i> Clientes Nuevos</h3>
+                        <div class="number">28</div>
+                        <p>Este mes</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modals -->
+    <div id="addVehicleModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addVehicleModal')">&times;</span>
+            <h2 id="vehicleModalTitle">Agregar Vehículo</h2>
+            <form id="vehicleForm">
+                <input type="hidden" id="vehicleId">
+                <div class="form-group">
+                    <label>Marca</label>
+                    <input type="text" id="vehicleBrand" required>
+                </div>
+                <div class="form-group">
+                    <label>Modelo</label>
+                    <input type="text" id="vehicleModel" required>
+                </div>
+                <div class="form-group">
+                    <label>Placa</label>
+                    <input type="text" id="vehiclePlate" required>
+                </div>
+                <div class="form-group">
+                    <label>Capacidad</label>
+                    <input type="number" id="vehicleCapacity" required min="1">
+                </div>
+                <div class="form-group">
+                    <label>Año</label>
+                    <input type="number" id="vehicleYear" required min="1900" max="2025">
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="vehicleStatus">
+                        <option value="disponible">Disponible</option>
+                        <option value="ocupado">Ocupado</option>
+                        <option value="mantenimiento">Mantenimiento</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-save"></i> Guardar Vehículo
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addBookingModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addBookingModal')">&times;</span>
+            <h2 id="bookingModalTitle">Nueva Reserva</h2>
+            <form id="bookingForm">
+                <input type="hidden" id="bookingId">
+                <!-- Modificado: Cliente ahora es campo de texto editable -->
+                <div class="form-group">
+                    <label>Cliente</label>
+                    <input type="text" id="bookingClient" required placeholder="Nombre del cliente">
+                </div>
+                <div class="form-group">
+                    <label>Fecha</label>
+                    <input type="date" id="bookingDate" required>
+                </div>
+                <div class="form-group">
+                    <label>Hora</label>
+                    <input type="time" id="bookingTime" required>
+                </div>
+                <div class="form-group">
+                    <label>Ruta</label>
+                    <select id="bookingRoute" required>
+                        <option value="">Seleccionar ruta</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Vehículo</label>
+                    <select id="bookingVehicle" required>
+                        <option value="">Seleccionar vehículo</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Número de Pasajeros</label>
+                    <input type="number" id="bookingPassengers" required min="1" max="50" value="10">
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="bookingStatus">
+                        <option value="confirmado">Confirmado</option>
+                        <option value="pendiente">Pendiente</option>
+                        <option value="cancelado">Cancelado</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-save"></i> Guardar Reserva
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addDriverModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addDriverModal')">&times;</span>
+            <h2 id="driverModalTitle">Agregar Conductor</h2>
+            <form id="driverForm">
+                <input type="hidden" id="driverId">
+                <div class="form-group">
+                    <label>Nombre Completo</label>
+                    <input type="text" id="driverName" required>
+                </div>
+                <div class="form-group">
+                    <label>Número de Licencia</label>
+                    <input type="text" id="driverLicense" required>
+                </div>
+                <div class="form-group">
+                    <label>Teléfono</label>
+                    <input type="tel" id="driverPhone" required>
+                </div>
+                <div class="form-group">
+                    <label>Experiencia (años)</label>
+                    <input type="number" id="driverExperience" required min="0">
+                </div>
+                <div class="form-group">
+                    <label>Estado</label>
+                    <select id="driverStatus">
+                        <option value="disponible">Disponible</option>
+                        <option value="ocupado">Ocupado</option>
+                        <option value="descanso">En Descanso</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-save"></i> Guardar Conductor
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div id="addRouteModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closeModal('addRouteModal')">&times;</span>
+            <h2 id="routeModalTitle">Agregar Ruta</h2>
+            <form id="routeForm">
+                <input type="hidden" id="routeId">
+                <div class="form-group">
+                    <label>Nombre de la Ruta</label>
+                    <input type="text" id="routeName" required>
+                </div>
+                <div class="form-group">
+                    <label>Origen</label>
+                    <input type="text" id="routeOrigin" required>
+                </div>
+                <div class="form-group">
+                    <label>Destino</label>
+                    <input type="text" id="routeDestination" required>
+                </div>
+                <div class="form-group">
+                    <label>Duración (horas)</label>
+                    <input type="number" step="0.5" id="routeDuration" required min="0.5">
+                </div>
+                <div class="form-group">
+                    <label>Precio Base</label>
+                    <input type="number" step="0.01" id="routePrice" required min="0">
+                </div>
+                <div class="form-group">
+                    <label>Descripción</label>
+                    <textarea id="routeDescription" rows="3"></textarea>
+                </div>
+                <button type="submit" class="btn">
+                    <i class="fas fa-save"></i> Guardar Ruta
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <div class="notification" id="notification"></div>
+
+    <script src="script.js"></script>
+</body>
+</html>
+<!-- partial -->
+  <script  src="./script.js"></script>
+
+</body>
+</html>
